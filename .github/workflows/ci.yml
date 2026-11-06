@@ -1,0 +1,39 @@
+name: Workspace conformance
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: conformance-cases
+      - uses: actions/checkout@v4
+        with:
+          repository: claimwindow-labs/predicate-engine
+          path: predicate-engine
+      - uses: actions/checkout@v4
+        with:
+          repository: claimwindow-labs/sdk-adapter
+          path: sdk-adapter
+      - uses: actions/checkout@v4
+        with:
+          repository: claimwindow-labs/balance-api
+          path: balance-api
+      - uses: actions/checkout@v4
+        with:
+          repository: claimwindow-labs/timeline-ui
+          path: timeline-ui
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test --prefix predicate-engine
+      - run: npm ci --prefix sdk-adapter
+      - run: npm test --prefix sdk-adapter
+      - run: npm test --prefix conformance-cases
+      - run: npm test --prefix balance-api
+      - run: node --check timeline-ui/server.js
